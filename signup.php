@@ -103,8 +103,7 @@ if (isset($_POST['register'])) {
         // Update existing user with new OTP and activation code
         $updateQuery = "UPDATE user SET 
             name = '$name',
-            company = '$company',
-            url = '$url',
+            company = '$company',            
             pan = '$pan',
             otp = '$otp',
             activation_code = '$activation_code'
@@ -116,8 +115,8 @@ if (isset($_POST['register'])) {
         }
     } else {
         // Insert new user
-        $insertQuery = "INSERT INTO user (name, company, url, email, pan,signup_time, otp, activation_code, status) 
-            VALUES ('$name', '$company', '$url', '$email', '$pan',NOW(), '$otp', '$activation_code', 'inactive')";
+        $insertQuery = "INSERT INTO user (name, company, email, pan,signup_time, otp, activation_code, status) 
+            VALUES ('$name', '$company', '$email', '$pan',NOW(), '$otp', '$activation_code', 'inactive')";
         
         if (!mysqli_query($conn, $insertQuery)) {
             echo "<script>alert('Registration failed: " . mysqli_error($conn) . "');</script>";
@@ -202,11 +201,7 @@ if (isset($_POST['register'])) {
                   <div class="input-box">
                     <i class="fas fa-landmark"></i>
                     <input type="text" name="company" placeholder="Enter your comapny name" required>
-                  </div>
-                  <div class="input-box">
-                    <i class="fas fa-globe"></i>
-                    <input type="text" name="url" placeholder="Enter url" required>
-                  </div>
+                  </div>                  
                   <div class="input-box">
                     <i class="fas fa-envelope"></i>
                     <input type="text" name="email" placeholder="Enter your email" required>

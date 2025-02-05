@@ -9,7 +9,6 @@ if (isset($_POST['verify'])) {
         $sqlSelect = "SELECT * FROM user WHERE activation_code ='".$activation_code."'";
         $resultSelect = mysqli_query($conn, $sqlSelect);
         if (mysqli_num_rows($resultSelect) > 0) {
-
             $rowSelect = mysqli_fetch_assoc($resultSelect);
             $rowOtp = $rowSelect['otp'];
             $rowSignupTime = $rowSelect['signup_time'];
@@ -19,32 +18,40 @@ if (isset($_POST['verify'])) {
             $timeUp = date_format($rowSignupTime,'d-m-Y h:i:s');
 
             if ($rowOtp !== $otp) {
-                echo "<script> alert('Please provide correct OTP..!')</script>";
-                }
-                else{
-                    if (date ('d-m-Y h:i:s') >= $timeUp) {
-                        echo "<script>alert('Your time is up..try it again..!')</script>";
-                        header("Refresh:1; url=signup.php");
-                        } 
-                else{
+                echo "<script>alert('Please provide correct OTP..!')</script>";
+            } else {
+                if (date('d-m-Y h:i:s') >= $timeUp) {
+                    echo "<script>alert('Your time is up..try it again..!')</script>";
+                    header("Refresh:1; url=signup.php");
+                } else {
                     $sqlUpdate = "UPDATE user SET status='active' WHERE otp = '".$otp."' AND activation_code = '".$activation_code."'";
                     $resultUpdate = mysqli_query($conn, $sqlUpdate);
                     if ($resultUpdate) {
-                        echo "<script>alert('Your account is verified..!')</script>";
-                        header("Refresh:1; url=signup.php");
-                        }
-                        else{
-                            echo "<script>alert('Your account is not verified')</script>";
-                            
-                        }
+                        // Fetch user details and GUID
+                        $userQuery = "SELECT name, company, email, pan, guid FROM user WHERE activation_code = '".$activation_code."'";
+                        $userResult = mysqli_query($conn, $userQuery);
+                        $userData = mysqli_fetch_assoc($userResult);
+                        
+                        // Store user data in session
+                        session_start();
+                        $_SESSION['verified_user'] = $userData;
+                        
+                        // Redirect to details page
+                        header("Location: user_details.php");
+                        exit();
+                    } else {
+                        echo "<script>alert('Your account is not verified')</script>";
                     }
                 }
             }
-            else{header("location: signup.php");}
-        } 
+        } else {
+            header("location: signup.php");
+        }
     }
-
+}
 ?>
+
+<!-- Rest of the existing email_verify.php HTML code remains the same -->
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
